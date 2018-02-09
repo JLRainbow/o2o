@@ -48,7 +48,7 @@ public class ShopDaoTest extends BaseTest {
 	@Test
 	public void testUpdateShop(){
 		Shop shop = new Shop();
-		shop.setShopId(2L);
+		shop.setShopId(1L);
 		shop.setShopName("测试Name");
 		shop.setShopDesc("测试Desc");
 		shop.setShopAddr("测试Addr");
