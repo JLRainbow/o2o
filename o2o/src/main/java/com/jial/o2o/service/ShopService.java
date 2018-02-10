@@ -1,14 +1,10 @@
 package com.jial.o2o.service;
 
 import java.io.File;
+import java.io.InputStream;
 
 import com.jial.o2o.dto.ShopExecution;
 import com.jial.o2o.entity.Shop;
-/**
- * 店铺接口
- * @author jial
- *
- */
 public interface ShopService {
 
 	/**
@@ -17,5 +13,5 @@ public interface ShopService {
 	 * @param shopImg
 	 * @return
 	 */
-	ShopExecution addShop(Shop shop,File shopImg);
+	ShopExecution addShop(Shop shop,InputStream shopImgInputStream,String fileName);
 }

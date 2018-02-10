@@ -2,6 +2,7 @@ package com.jial.o2o.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
@@ -27,14 +28,14 @@ public class ImgUtil {
 	 * @param targetAddr
 	 * @return
 	 */
-	public static String generateThumbnail(File thumbnail, String targetAddr) {
+	public static String generateThumbnail(InputStream thumbnailInputStream,String fileName ,String targetAddr) {
 		String realFileName = getRandomFileName();
-		String extension = getFileExtension(thumbnail);
+		String extension = getFileExtension(fileName);
 		makeDirPath(targetAddr);
 		String relativeAddr = targetAddr + realFileName + extension;
 		File dest = new File(PathUtil.getImgBasePath() + relativeAddr);
 		try {
-			Thumbnails.of(thumbnail)
+			Thumbnails.of(thumbnailInputStream)
 			.size(200, 200)
 			.watermark(Positions.BOTTOM_RIGHT, ImageIO.read(new File(basePath+"/watermark.jpg")), 0.3f)
 			.outputQuality(0.3f)
@@ -62,10 +63,9 @@ public class ImgUtil {
 	 * @param thumbnail
 	 * @return
 	 */
-	private static String getFileExtension(File thumbnail) {
+	private static String getFileExtension(String fileName) {
 		// 获取上传文件的文件名
-		String originalFilename = thumbnail.getName();
-		return originalFilename.substring(originalFilename.lastIndexOf("."));
+		return fileName.substring(fileName.lastIndexOf("."));
 	}
 
 	/**

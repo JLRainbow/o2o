@@ -150,7 +150,7 @@
 			<artifactId>thumbnailator</artifactId>
 			<version>0.4.8</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.github.penggle/kaptcha -->
+		<!-- https://mvnrepository.com/artifact/com.github.penggle/kaptcha  验证码-->
 		<dependency>
 			<groupId>com.github.penggle</groupId>
 			<artifactId>kaptcha</artifactId>
