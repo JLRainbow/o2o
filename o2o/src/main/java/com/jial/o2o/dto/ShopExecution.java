@@ -8,7 +8,7 @@ import com.jial.o2o.enums.ShopStateEnum;
 /**
  * shop返回类
  * 
- * @author Administrator
+ * @author jial
  *
  */
 public class ShopExecution {
