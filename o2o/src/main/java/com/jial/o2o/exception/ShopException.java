@@ -1,4 +1,4 @@
-package com.jial.o2o;
+package com.jial.o2o.exception;
 /**
  * 店铺异常类
  * @author jial
