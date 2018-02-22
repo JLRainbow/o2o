@@ -4,7 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 
 /**
  * 验证码比对工具类
- * @author Administrator
+ * @author jial
  *
  */
 public class CaptchaUtil {

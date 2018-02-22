@@ -8,11 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.jial.o2o.ShopException;
 import com.jial.o2o.dao.ShopDao;
 import com.jial.o2o.dto.ShopExecution;
 import com.jial.o2o.entity.Shop;
 import com.jial.o2o.enums.ShopStateEnum;
+import com.jial.o2o.exception.ShopException;
 import com.jial.o2o.service.ShopService;
 import com.jial.o2o.util.ImgUtil;
 import com.jial.o2o.util.PathUtil;
@@ -62,6 +62,21 @@ public class ShopServiceImpl implements ShopService {
 		String dest = PathUtil.getShopImgPath(shop.getShopId());
 		String shopImgAddr = ImgUtil.generateThumbnail(shopImgInputStream,fileName, dest);
 		shop.setShopImg(shopImgAddr);
+	}
+	@Override
+	public Shop getByShopId(long shopId) {
+		return shopDao.queryByShopId(shopId);
+	}
+	@Override
+	public ShopExecution updateShop(Shop shop, InputStream shopImgInputStream, String fileName) throws ShopException {
+		if(shop == null||shop.getShopId()==null){
+			return new ShopExecution(ShopStateEnum.NULL_SHOP);
+		}else{
+			
+			//1.判断是否需要处理图片
+			//2.更新店铺信息
+		}
+		return null;
 	}
 
 }

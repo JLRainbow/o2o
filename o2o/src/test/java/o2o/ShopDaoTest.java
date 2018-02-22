@@ -31,8 +31,8 @@ public class ShopDaoTest extends BaseTest {
 		shop.setOwner(personInfo);
 		shop.setShopCategory(shopCategory);
 		shop.setArea(area);
-		shop.setShopName("testName");
-		shop.setShopDesc("testDesc");
+		shop.setShopName("testName2");
+		shop.setShopDesc("testDesc2");
 		shop.setShopAddr("testAddr");
 		shop.setPhone("123");
 		shop.setShopImg("img");
@@ -56,4 +56,11 @@ public class ShopDaoTest extends BaseTest {
 		int effectedNum = shopDao.updateShop(shop);
 		assertEquals(1, effectedNum);
 	}
+	
+	@Test
+	public void testQueryByShopId(){
+		Shop shop = shopDao.queryByShopId(1L);
+		assertEquals("测试Name", shop.getShopName());
+	}
+	
 }
