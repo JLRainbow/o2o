@@ -7,6 +7,14 @@ import com.jial.o2o.entity.Shop;
 import com.jial.o2o.exception.ShopException;
 public interface ShopService {
 	/**
+	 * 根据shopCondition条件返回店铺分页列表
+	 * @param shopCondition
+	 * @param pageIndex
+	 * @param pageSize
+	 * @return
+	 */
+	ShopExecution getShopList(Shop shopCondition,int pageIndex,int pageSize);
+	/**
 	 * 根据店铺id获取店铺信息
 	 * @param shopId
 	 * @return

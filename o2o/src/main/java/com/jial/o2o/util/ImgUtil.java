@@ -87,4 +87,21 @@ public class ImgUtil {
 		.outputQuality(0.8f)//压缩图片
 		.toFile("E:/testwatermark.jpg");//输出位置
 	}
+	/**
+	 * path如果是文件路径就删除该文件
+	 * path如果是目录路径就删除该目录下的所有文件
+	 * @param path
+	 */
+	public static void deleteFileOrPath(String path){
+		File fileOrPath = new File(PathUtil.getImgBasePath()+path);
+		if(fileOrPath.exists()){
+			if(fileOrPath.isDirectory()){
+				File[] files = fileOrPath.listFiles();
+				for (int i = 0; i < files.length; i++) {
+					files[i].delete();
+				}
+			}
+			fileOrPath.delete();
+		}
+	}
 }

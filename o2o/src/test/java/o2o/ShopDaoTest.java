@@ -4,6 +4,7 @@ package o2o;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Date;
+import java.util.List;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,25 @@ import com.jial.o2o.entity.ShopCategory;
 public class ShopDaoTest extends BaseTest {
 	@Autowired
 	private ShopDao shopDao;
+	
+	@Test
+	public void testQueryShopListAndCount(){
+		Shop shopCondition = new Shop();
+		PersonInfo owner = new PersonInfo();
+		owner.setUserId(1L);
+		shopCondition.setOwner(owner);
+		List<Shop> shopList = shopDao.queryShopList(shopCondition, 0, 3);
+		int count = shopDao.queryShopCount(shopCondition);
+		System.out.println("店铺列表大小"+shopList.size());
+		System.out.println("店铺总数"+count);
+		Area area = new Area();
+		area.setAreaId(2);
+		shopCondition.setArea(area);
+		List<Shop> shopList2 = shopDao.queryShopList(shopCondition, 0, 3);
+		int count2 = shopDao.queryShopCount(shopCondition);
+		System.out.println("2店铺列表大小"+shopList2.size());
+		System.out.println("2店铺总数"+count2);
+	}
 
 	@Test
 	public void testInsertShop(){

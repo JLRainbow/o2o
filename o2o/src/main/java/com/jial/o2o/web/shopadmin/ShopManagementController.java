@@ -1,9 +1,6 @@
 package com.jial.o2o.web.shopadmin;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,8 +29,6 @@ import com.jial.o2o.service.ShopCategoryService;
 import com.jial.o2o.service.ShopService;
 import com.jial.o2o.util.CaptchaUtil;
 import com.jial.o2o.util.HttpServletRequestUtil;
-import com.jial.o2o.util.ImgUtil;
-import com.jial.o2o.util.PathUtil;
 
 @Controller
 @RequestMapping("/shopadmin")
@@ -45,6 +40,77 @@ public class ShopManagementController {
 	private ShopCategoryService shopCategoryService;
 	@Autowired
 	private AreaService areaService;
+	
+	@RequestMapping(value="/getShopManagementInfo" , method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String,Object> getShopManagementInfo(HttpServletRequest req){
+		Map<String,Object> modelMap = new HashMap<>();
+		long shopId = HttpServletRequestUtil.getLong(req, "shopId");
+		if(shopId<=0){
+			Object currentShopObj = req.getSession().getAttribute("currentShop");
+			if(currentShopObj==null){
+				modelMap.put("redirect", true);
+				modelMap.put("url", "/o2o/shopadmin/shopList");
+			}else{
+				Shop currentShop = (Shop)currentShopObj;
+				modelMap.put("redirect", false);
+				modelMap.put("shopId", currentShop.getShopId());
+			}
+			
+		}else{
+			Shop currentShop = new Shop();
+			currentShop.setShopId(shopId);
+			req.getSession().setAttribute("currentShop",currentShop);
+			modelMap.put("redirect", false);
+		}
+		return modelMap;
+	}
+	
+	@RequestMapping(value="/getShopList" , method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String,Object> getShopList(HttpServletRequest req){
+		Map<String,Object> modelMap = new HashMap<>();
+		PersonInfo user = new PersonInfo();
+		user.setUserId(1L);
+		user.setName("test");
+		req.getSession().setAttribute("user", user);
+		user =(PersonInfo) req.getSession().getAttribute("user");
+		try {
+			Shop shopCondition = new Shop();
+			shopCondition.setOwner(user);
+			ShopExecution se = shopservice.getShopList(shopCondition, 0, 100);
+			modelMap.put("success", true);
+			modelMap.put("shopList", se.getShopList());
+			modelMap.put("user", user);
+		} catch (Exception e) {
+			modelMap.put("success", false);
+			modelMap.put("errMsg", e.getMessage());
+		}
+		return modelMap;
+	}
+	
+	@RequestMapping(value="/getShopById" , method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String,Object> getShopById(HttpServletRequest req){
+		Map<String,Object> modelMap = new HashMap<>();
+		long shopId = HttpServletRequestUtil.getLong(req, "shopId");
+		if(shopId>-1){
+			try {
+				Shop shop = shopservice.getByShopId(shopId);
+				List<Area> areaList = areaService.getAreaList();
+				modelMap.put("success", true);
+				modelMap.put("shop", shop);
+				modelMap.put("areaList", areaList);
+			} catch (Exception e) {
+				modelMap.put("success", false);
+				modelMap.put("errMsg", e.getMessage());
+			}
+		}else{
+			modelMap.put("success", false);
+			modelMap.put("errMsg", "empty shopId");
+		}
+		return modelMap;
+	}
 	
 	@RequestMapping(value="/getShopInitInfo" , method = RequestMethod.GET)
 	@ResponseBody
@@ -65,6 +131,7 @@ public class ShopManagementController {
 		return modelMap;
 	}
 
+	@SuppressWarnings("unchecked")
 	@RequestMapping(value="/registerShop" , method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String,Object> registerShop(HttpServletRequest req){
@@ -99,14 +166,20 @@ public class ShopManagementController {
 		//2.注册店铺
 		if(shop!=null&&shopImg!=null){
 			//personInfo应该是从session中获取
-			PersonInfo owner = new PersonInfo();
-			owner.setUserId(1L);
+			PersonInfo owner = (PersonInfo) req.getSession().getAttribute("user");
 			shop.setOwner(owner);
 			ShopExecution se;
 			try {
 				se = shopservice.addShop(shop, shopImg.getInputStream(),shopImg.getOriginalFilename());
 				if(se.getState() == ShopStateEnum.CHECK.getState()){
 					modelMap.put("success", true);
+					//该用户可以操作的店铺列表
+					List<Shop> shopList = (List<Shop>) req.getSession().getAttribute("shopList");
+					if(shopList == null||shopList.size() == 0){
+						shopList = new ArrayList<Shop>();
+					}
+					shopList.add(se.getShop());
+					req.getSession().setAttribute("shopList", shopList);
 				}else{
 					modelMap.put("success", false);
 					modelMap.put("errMsg", se.getStateInfo());
@@ -120,6 +193,64 @@ public class ShopManagementController {
 		}else{
 			modelMap.put("success", false);
 			modelMap.put("errMsg", "请填写注册店铺信息");
+			return modelMap;
+		}
+		//3.返回结果
+		
+	}
+	
+	@RequestMapping(value="/updateShop" , method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String,Object> updateShop(HttpServletRequest req){
+		Map<String,Object> modelMap = new HashMap<>();
+		//验证码比对
+		if(!CaptchaUtil.checkCaptcha(req)){
+			modelMap.put("success", false);
+			modelMap.put("errMsg", "验证码输入错误");
+			return modelMap;
+		}
+		//1.接受并转化相应的参数，包括店铺的信息及图片信息
+		String shopStr = HttpServletRequestUtil.getString(req, "shopStr");
+		ObjectMapper mapper = new ObjectMapper();
+		Shop shop = null;
+		try {
+			shop = mapper.readValue(shopStr, Shop.class);
+		}catch (Exception e) {
+			modelMap.put("success", false);
+			modelMap.put("errMsg", e.getMessage());
+			return modelMap;
+		}
+		CommonsMultipartFile shopImg = null;
+		CommonsMultipartResolver commonsMultipartResolver = new CommonsMultipartResolver(req.getSession().getServletContext());
+		if(commonsMultipartResolver.isMultipart(req)){
+			MultipartHttpServletRequest multipartHttpServletRequest = (MultipartHttpServletRequest)req;
+			shopImg = (CommonsMultipartFile) multipartHttpServletRequest.getFile("shopImg");
+		}
+		//2.修改店铺
+		if(shop!=null&&shop.getShopId()!=null){
+			
+			ShopExecution se;
+			try {
+				if(shopImg==null){
+					se = shopservice.updateShop(shop, null,null);
+				}else{
+					se = shopservice.updateShop(shop, shopImg.getInputStream(),shopImg.getOriginalFilename());
+				}
+				if(se.getState() == ShopStateEnum.SUCCESS.getState()){
+					modelMap.put("success", true);
+				}else{
+					modelMap.put("success", false);
+					modelMap.put("errMsg", se.getStateInfo());
+				}
+				
+			} catch (IOException e) {
+				modelMap.put("success", false);
+				modelMap.put("errMsg", e.getMessage());
+			}
+			return modelMap;
+		}else{
+			modelMap.put("success", false);
+			modelMap.put("errMsg", "请输入店铺id");
 			return modelMap;
 		}
 		//3.返回结果
