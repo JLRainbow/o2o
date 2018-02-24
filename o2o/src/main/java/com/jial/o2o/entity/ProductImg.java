@@ -3,7 +3,7 @@ package com.jial.o2o.entity;
 import java.util.Date;
 /**
  * 商品图片详情实体类
- * @author Administrator
+ * @author jial
  *
  */
 public class ProductImg {

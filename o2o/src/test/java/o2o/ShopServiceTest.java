@@ -10,6 +10,7 @@ import java.io.InputStream;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.jial.o2o.dto.ImageHolder;
 import com.jial.o2o.dto.ShopExecution;
 import com.jial.o2o.entity.Area;
 import com.jial.o2o.entity.PersonInfo;
@@ -56,7 +57,8 @@ public class ShopServiceTest extends BaseTest {
 		shop.setAdvice("审核中...");
 		File shopImg =  new File("E:/test.jpg");
 		InputStream is = new FileInputStream(shopImg);
-		ShopExecution se=shopservice.addShop(shop, is, shopImg.getName());
+		ImageHolder imageHolder = new ImageHolder(shopImg.getName(), is);
+		ShopExecution se=shopservice.addShop(shop, imageHolder);
 		assertEquals(ShopStateEnum.CHECK.getState() ,se.getState());
 	}
 	
@@ -67,7 +69,8 @@ public class ShopServiceTest extends BaseTest {
 		shop.setShopName("修改后的名称");
 		File shopImg =  new File("E:/test2.jpg");
 		InputStream is = new FileInputStream(shopImg);
-		ShopExecution updateShop = shopservice.updateShop(shop, is, shopImg.getName());
+		ImageHolder imageHolder = new ImageHolder(shopImg.getName(), is);
+		ShopExecution updateShop = shopservice.updateShop(shop, imageHolder);
 		System.out.println("新的图片地址："+updateShop.getShop().getShopImg());
 	}
 }

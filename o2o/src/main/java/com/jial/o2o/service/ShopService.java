@@ -2,6 +2,7 @@ package com.jial.o2o.service;
 
 import java.io.InputStream;
 
+import com.jial.o2o.dto.ImageHolder;
 import com.jial.o2o.dto.ShopExecution;
 import com.jial.o2o.entity.Shop;
 import com.jial.o2o.exception.ShopException;
@@ -29,7 +30,7 @@ public interface ShopService {
 	 * @return
 	 * @throws ShopException
 	 */
-	ShopExecution updateShop(Shop shop,InputStream shopImgInputStream,String fileName) throws ShopException; 
+	ShopExecution updateShop(Shop shop,ImageHolder thumbnail) throws ShopException; 
 
 	/**
 	 * 添加店铺
@@ -37,5 +38,5 @@ public interface ShopService {
 	 * @param shopImg
 	 * @return
 	 */
-	ShopExecution addShop(Shop shop,InputStream shopImgInputStream,String fileName);
+	ShopExecution addShop(Shop shop,ImageHolder thumbnail);
 }

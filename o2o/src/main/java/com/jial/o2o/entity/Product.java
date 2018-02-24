@@ -29,7 +29,7 @@ public class Product implements Serializable {
 	//0.下架 1.上架
 	private Integer enableStatus;
 	private Integer point;
-
+	
 	private List<ProductImg> productImgList;
 	//商品类别
 	private ProductCategory productCategory;
