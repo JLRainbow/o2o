@@ -3,6 +3,7 @@ package com.jial.o2o.service.impl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.jial.o2o.dao.ProductDao;
@@ -13,6 +14,7 @@ import com.jial.o2o.entity.Product;
 import com.jial.o2o.exception.ProductException;
 import com.jial.o2o.service.ProductService;
 
+@Service
 public class ProductServiceImpl implements ProductService {
 	
 	@Autowired
